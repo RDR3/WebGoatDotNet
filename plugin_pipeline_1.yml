@@ -2,45 +2,17 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 steps:
-- script: |
-    docker run \
-    -v $(Build.Repository.LocalPath):/code \
-    checkmarx/cx-flow:$(CX_FLOW_VERSION) \
-    --scan \
-    --f=/code \
-    --cx-project="$(Build.Repository.Name)" \
-    --namespace=$(basename $(System.CollectionUri)) \
-    --app="$(Build.Repository.Name)" \
-    --alt-project="$(System.TeamProject)" \
-    --alt-fields="Area Path:$(System.TeamProject)" \
-    --repo-name="$(Build.Repository.Name)" \
-    --branch=$(basename $(Build.SourceBranch)) \
-    --cx-flow.bug-tracker=$(CX_FLOW_BUG_TRACKER) \
-    --cx-flow.bug-tracker-impl=$(CX_FLOW_BUG_TRACKER) \
-    --cx-flow.filter-severity="$(CX_FILTER_SEVERITIES)" \
-    --cx-flow.filter-state="$(CX_FILTER_STATE)" \
-    --checkmarx.base-url=$(CX_SERVER) \
-    --checkmarx.version=$(CX_VERSION) \
-    --checkmarx.client-id=$(CX_CLIENT_ID) \
-    --checkmarx.client-secret=$(CX_CLIENT_SECRET) \
-    --checkmarx.scope="$(CX_SCOPE)" \
-    --checkmarx.configuration="$(CX_CONFIGURATION)" \
-    --checkmarx.preset="$(CX_PRESET)" \
-    --checkmarx.team="$(CX_TEAM)" \
-    --checkmarx.username=$(CX_USERNAME) \
-    --checkmarx.password=$(CX_PASSWORD) \
-    --checkmarx.exclude-folders="$(CX_EXCLUDE_FOLDERS)" \
-    --checkmarx.exclude-files="$(CX_EXCLUDE_FILES)" \
-    --checkmarx.multi-tenant=$(CX_IS_MULTI_TENANT) \
-    --azure.token=$(System.AccessToken) \
-    --azure.url=$(CX_AZURE_URL) \
-    --azure.issue-type="$(CX_AZURE_ISSUE_TYPE)" \
-    --azure.api-version=$(CX_AZURE_API_VERSION) \
-    --azure.false-positive-label="$(CX_AZURE_FALSE_POSITIVE_LABEL)" \
-    --azure.block-merge=$(CX_AZURE_BLOCK_MERGE) \
-    --azure.closed-status="$(CX_AZURE_CLOSED_STATUS)" \
-    --azure.open-status="$(CX_AZURE_OPEN_STATUS)"
-  displayName: 'Run Checkmarx CxFlow Scan'
+- task: Application security testing@2020
+  inputs:
+    projectName: 'ADO-Plugin-Freeport-SAST-1'
+    enableProxy: false
+    enableSastScan: true
+    CheckmarxService: 'Cx Private Cloud 9.3'
+    fullTeamName: 'CxServer\SP\America\NA-RR-PS\RDR3\ADO_CXFLOW_DOCKER'
+    incScan: false
+    forceScan: true
+    comment: 'SAST scan initiated via ADo plugin'
+    enableDependencyScan: false
